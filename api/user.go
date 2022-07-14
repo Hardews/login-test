@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 	"login-test/middleware"
 	"login-test/model"
 	"login-test/service"
@@ -26,6 +27,10 @@ func Login(ctx *gin.Context) {
 	}
 	err, flag := service.CheckPassword(user.Username, user.Password)
 	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			tool.RespErrorWithDate(ctx, "账号不存在")
+			return
+		}
 		tool.RespInternetError(ctx)
 		fmt.Println("check password failed,err:", err)
 		return
